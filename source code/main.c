@@ -6,6 +6,7 @@ int main()
 {
     int i;
     int type;
+    User * usr;
     gotoxy(25,10);
     textcolor(YELLOW);
     printf("WELCOME TO CAR RENTAL SYSTEM");
@@ -49,6 +50,13 @@ int main()
             if(type==1)
             {
                 //code for admin login
+                usr=getInput();
+                if(usr==NULL)
+                    break;
+                else
+                {
+                    //call for checkUserExist();
+                }
             }
             else if(type==2)
             {
@@ -84,3 +92,4 @@ int main()
 
     return 0;
 }
+
