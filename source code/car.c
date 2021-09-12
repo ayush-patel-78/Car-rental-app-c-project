@@ -77,6 +77,11 @@ User* getInput()
             break;
         }
         printf("*");
+        if(u.pwd[i]==8)
+        {
+            printf("\b\b  \b\b");
+            i=i-2;
+        }
         i++;
     }
     u.pwd[i]='\0';
