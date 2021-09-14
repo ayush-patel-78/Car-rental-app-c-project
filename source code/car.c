@@ -89,15 +89,79 @@ User* getInput()
     {
         textcolor(LIGHTRED);
         gotoxy(30,17);
-        printf("Login Cancelled");
+        printf("Login cancelled");
         getch();
         textcolor(YELLOW);
         return NULL;
     }
 
     getch();
+    return &u;
 
 
+}
+int checkUserExist(User u,char *usertype)
+{
+    if(strlen(u.userid)==0|| strlen(u.pwd)==0)
+    {
+        gotoxy(28,20);
+        textcolor(LIGHTRED);
+        printf("Both fields are mandatory. Try again");
+        getch();
+        gotoxy(28,20);
+        printf("\t\t\t\t\t\t\t\t\t");
+        return 0;
+    }
+    FILE *fp;
+    if(strcmp(usertype,"admin")==0)
+    {
+       fp=fopen("admin.bin","rb");
+    }
+    else
+    {
+        fp=fopen("emp.bin","rb");
+    }
+    if(fp==NULL)
+    {
+         gotoxy(28,20);
+        textcolor(LIGHTRED);
+        printf("Sorry! cannot open the file");
+        getch();
+        gotoxy(28,20);
+        printf("\t\t\t\t\t\t\t\t\t");
+        return -1;
+    }
+    int found=0;
+    User user;
+    while(fread(&user,sizeof(user),1,fp)==1)
+    {
+        if(strcmp(u.userid,user.userid)==0&&strcmp(u.pwd,user.pwd)==0)
+        {
+            found=1;
+            break;
+        }
+    }
+    if(found==0)
+    {
+        gotoxy(28,20);
+        textcolor(LIGHTRED);
+        printf("invalid userid/password. Try again");
+        getch();
+        gotoxy(28,20);
+        printf("\t\t\t\t\t\t\t\t\t");
+
+    }
+    else
+    {
+        gotoxy(28,20);
+        textcolor(LIGHTGREEN);
+        printf("LOGIN SUCCESSFULL!");
+        getch();
+        gotoxy(28,20);
+        printf("\t\t\t\t\t\t\t\t\t");
+
+    }
+    fclose(fp);
 
 }
 
