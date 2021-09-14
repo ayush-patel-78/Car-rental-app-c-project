@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "conio2.h"
+#include "car.h"
 
 int main()
 {
     int i;
-    int type;
+    int type,k;
     User * usr;
     gotoxy(25,10);
     textcolor(YELLOW);
@@ -50,13 +51,20 @@ int main()
             if(type==1)
             {
                 //code for admin login
-                usr=getInput();
-                if(usr==NULL)
-                    break;
-                else
+                do
                 {
+                   usr=getInput();
+                   if(usr==NULL)
+                       break;
+                   else
+                   {
                     //call for checkUserExist();
-                }
+                    k=checkUserExist(*usr,"admin");
+                   }
+                }while(k==0);
+                if(k==-1)
+                    break;
+
             }
             else if(type==2)
             {
@@ -92,4 +100,3 @@ int main()
 
     return 0;
 }
-
