@@ -64,6 +64,51 @@ int main()
                 }while(k==0);
                 if(k==-1)
                     break;
+                    if(k==1)
+                    {
+                        gotoxy(1,20);
+                        textcolor(WHITE);
+                        printf("Press any key to continue");
+                        _getch();
+                        while(1)
+                        {
+                            clrscr();
+                            choice=adminMenu();
+                            if(choice==7)
+                                break;
+                            switch(choice)
+                            {
+                            case 1:
+                                clrscr();
+                                //addEmployee();
+                                break;
+                            case 2:
+                                clrscr();
+                               // addCarDetails();
+                                break;
+                            case 3:
+                                clrscr();
+                                //viewEmployee();
+                                break;
+                            case 4:
+                                clrscr();
+                                //showCarDetails();
+                                break;
+                            case 5:
+                                clrscr();
+                                //deleteEmp();
+                                break;
+                            case 6:
+                                clrscr();
+                                //deletCarModel();
+                                break;
+                            default:
+                                
+                                
+                            }
+                        }
+                        
+                    }
 
             }
             else if(type==2)
@@ -100,3 +145,4 @@ int main()
 
     return 0;
 }
+
