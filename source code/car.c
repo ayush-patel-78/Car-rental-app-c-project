@@ -162,6 +162,43 @@ int checkUserExist(User u,char *usertype)
 
     }
     fclose(fp);
+    return found;
 
+}
+
+int adminMenu()
+{
+    int i,choice;
+    textcolor(LIGHTRED);
+    gotoxy(32,2);
+    printf("CAR RENTAL SYSTEM");
+    textcolor(LIGHTGREEN);
+    gotoxy(35,6);
+    printf("ADMIN MENU\n");
+    for(i=1;i<=80;i++)
+    {
+        printf("*");
+    }
+    textcolor("YELLOW");
+    gotoxy(32,8);
+    printf("1. Add Employee");
+    gotoxy(32,9);
+    printf("2. Add Car Details");
+     gotoxy(32,10);
+    printf("3. Show Employee");
+     gotoxy(32,11);
+    printf("4. Show car Details");
+     gotoxy(32,12);
+    printf("5. Delete Employee");
+     gotoxy(32,13);
+    printf("6. Delete Car Details");
+     gotoxy(32,14);
+    printf("7. Exit");
+     gotoxy(32,16);
+    printf("1. Enter Choice:");
+    scanf("%d",&choice);
+    return choice;
+    
+    
 }
 
