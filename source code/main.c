@@ -73,6 +73,7 @@ int main()
                         while(1)
                         {
                             clrscr();
+                            int choice;
                             choice=adminMenu();
                             if(choice==7)
                                 break;
@@ -80,7 +81,7 @@ int main()
                             {
                             case 1:
                                 clrscr();
-                                //addEmployee();
+                                addEmployee();
                                 break;
                             case 2:
                                 clrscr();
@@ -103,11 +104,12 @@ int main()
                                 //deletCarModel();
                                 break;
                             default:
-                                
-                                
+                                break;
+
+
                             }
                         }
-                        
+
                     }
 
             }
