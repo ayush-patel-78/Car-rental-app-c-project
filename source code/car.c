@@ -196,9 +196,86 @@ int adminMenu()
     printf("7. Exit");
      gotoxy(32,16);
     printf("1. Enter Choice:");
+    textcolor(WHITE);
     scanf("%d",&choice);
     return choice;
-    
-    
+
+
+}
+
+void addEmployee()
+{
+    char empid[10]={"EMP-"};
+    char temp[10];
+    char choice;
+    User u;
+    FILE *fp=fopen("emp.bin","ab+");
+    fseek(fp,0,SEEK_END);
+    long total_rec=ftell(fp)/sizeof(User);
+    total_rec++;
+    sprintf(temp,"%d",total_rec);
+    strcat(empid,temp);
+    strcpy(u.userid,empid);
+    //above 3 steps can be written in onle line like
+    // sprintf(temp,"EMP-%d",total_rec);
+    //strcpy(u.userid,temp);
+    do
+    {
+
+        clrscr();
+        gotoxy(32,2);
+        textcolor(LIGHTRED);
+        printf("CAR RENTAL APP");
+        textcolor(LIGHTGREEN);
+        int i;
+        gotoxy(1,3);
+        for(i=0;i<=80;i++)
+            printf("~");
+        textcolor(WHITE);
+        gotoxy(25,5);
+        printf("***** Add Employee Details *****");
+        gotoxy(1,8);
+        textcolor(YELLOW);
+        printf("Enter Employee Name:");
+        fflush(stdin);
+        textcolor(WHITE);
+        fgets(u.name,20,stdin);
+        char *pos;
+        pos=strchr(u.name,'\n');
+        if(pos!=NULL)
+        {
+            *pos='\0';
+        }
+        textcolor(YELLOW);
+        printf("Enter Employee Pwd:");
+        fflush(stdin);
+        textcolor(WHITE);
+        fgets(u.pwd,20,stdin);
+        pos=strchr(u.pwd,'\n');
+        if(pos!=NULL)
+        {
+            *pos='\0';
+        }
+        fwrite(&u,sizeof(u),1,fp);
+        gotoxy(30,15);
+        textcolor(LIGHTGREEN);
+        printf("EMPLOYEE ADDED SUCCESSFULLY!");
+        printf("\n EMPLOYEE ID is %s",u.userid);
+        getch();
+
+        gotoxy(1,20);
+        textcolor(LIGHTRED);
+        printf("Do you want to add more employees(Y/N)?");
+        textcolor(WHITE);
+        fflush(stdin);
+        scanf("%d",&choice);
+        if(choice=='N');
+           break;
+        total_rec++;
+        sprintf(u.userid,"EMP-%d",total_rec);
+
+
+    }while(1);
+    fclose(fp);
 }
 
