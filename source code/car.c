@@ -179,7 +179,7 @@ int adminMenu()
     {
         printf("*");
     }
-    textcolor("YELLOW");
+    textcolor(YELLOW);
     gotoxy(32,8);
     printf("1. Add Employee");
     gotoxy(32,9);
@@ -195,7 +195,7 @@ int adminMenu()
      gotoxy(32,14);
     printf("7. Exit");
      gotoxy(32,16);
-    printf("1. Enter Choice:");
+    printf(" Enter Choice:");
     textcolor(WHITE);
     scanf("%d",&choice);
     return choice;
@@ -268,14 +268,199 @@ void addEmployee()
         printf("Do you want to add more employees(Y/N)?");
         textcolor(WHITE);
         fflush(stdin);
-        scanf("%d",&choice);
-        if(choice=='N');
+        scanf("%c",&choice);
+        if(choice=='N')
            break;
         total_rec++;
         sprintf(u.userid,"EMP-%d",total_rec);
 
 
+
     }while(1);
     fclose(fp);
 }
+
+void addCarDetails()
+{
+
+    char choice;
+    Car c;
+    FILE *fp=fopen("car.bin","ab+");
+    fseek(fp,0,SEEK_END);
+    int total_rec=ftell(fp)/sizeof(Car);
+    total_rec++;
+    c.car_id=total_rec;
+
+    do
+    {
+
+        clrscr();
+        gotoxy(32,2);
+        textcolor(LIGHTRED);
+        printf("CAR RENTAL APP");
+        textcolor(LIGHTGREEN);
+        int i;
+        gotoxy(1,3);
+        for(i=0;i<=80;i++)
+            printf("~");
+        textcolor(WHITE);
+        gotoxy(25,5);
+        printf("***** ADD CAR DETAILS *****");
+        gotoxy(1,8);
+        textcolor(YELLOW);
+        printf("Enter Car Model:");
+        fflush(stdin);
+
+        textcolor(WHITE);
+        fgets(c.car_name,50,stdin);
+        char *pos;
+        pos=strchr(c.car_name,'\n');
+        if(pos!=NULL)
+        {
+            *pos='\0';
+        }
+        textcolor(YELLOW);
+        printf("Enter Car Capacity:");
+        fflush(stdin);
+        textcolor(WHITE);
+        scanf("%d",&c.capacity);
+        textcolor(YELLOW);
+        printf("Enter Car Count:");
+        textcolor(WHITE);
+        scanf("%d",&c.car_count);
+        textcolor(YELLOW);
+        printf("Enter Car price for per day:");
+        textcolor(WHITE);
+        scanf("%d",&c.price);
+
+
+        fwrite(&c,sizeof(c),1,fp);
+        gotoxy(30,15);
+        textcolor(LIGHTGREEN);
+        printf("CAR ADDED SUCCESSFULLY!");
+        printf("\n CAR ID is %d",c.car_id);
+        getch();
+
+        gotoxy(1,20);
+        textcolor(LIGHTRED);
+        printf("Do you want to add more Cars(Y/N)?");
+        textcolor(WHITE);
+        fflush(stdin);
+        scanf("%c",&choice);
+        if(choice=='N')
+           break;
+        total_rec++;
+        c.car_id=total_rec;
+
+
+
+
+    }while(1);
+    fclose(fp);
+}
+/*
+void viewEmployee()
+{
+    clrscr();
+    User u;
+    FILE *fp;
+    fp=fopen("emp.bin","rb");
+    if(fp==NULL)
+    {
+        printf("Sorry! Cannot open the file");
+        return 1;
+    }
+
+        clrscr();
+        gotoxy(32,2);
+        textcolor(LIGHTRED);
+        printf("CAR RENTAL APP");
+        textcolor(YELLOW);
+        int i;
+        gotoxy(1,3);
+        for(i=0;i<=80;i++)
+            printf("%c",247);
+        textcolor(WHITE);
+        gotoxy(28,6);
+        printf("***** Employee Details *****");
+        gotoxy(1,10);
+        textcolor(LIGHTGREEN);
+         for(i=0;i<=80;i++)
+            printf("%c",247);
+
+
+         gotoxy(2,12);
+         printf("\tEMPLOYEE ID\t\t\t");
+
+         printf("NAME\t\t\t");
+         printf("PASSWORD");
+         gotoxy(1,14);
+         for(i=0;i<=80;i++)
+            printf("%c",247);
+        textcolor(YELLOW);
+        while( fread(&u,sizeof(User),1,fp)==1)
+        {
+            printf("\n");
+            printf("\t%s\t\t\t\t",u.userid);
+            printf("%s\t\t\t",u.name);
+            printf("%s\n",u.pwd);
+        }
+        getch();
+
+
+}
+
+*/
+void viewEmployee()
+{
+    FILE *fp=fopen("emp.bin","rb");
+    User ur;
+    int i;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    for(int i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(31,5);
+    printf("* EMPLOYEE DETAILS *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(int i=1;i<=80;i++)
+        printf("%c",247);
+    
+    if(fp==NULL)
+    {
+        gotoxy(31,9);
+        textcolor(LIGHTRED);
+        printf("Sorry! No Employee added yet!");
+        getch();
+        return;
+    }
+    gotoxy(1,8);
+    printf("Employee ID\t\t\tName\t\t\tPassword");
+    gotoxy(1,9);
+    for(int i=1;i<=80;i++)
+        printf("%c",247);
+    int row=10;
+    textcolor(YELLOW);
+    while(fread(&ur,sizeof(ur),1,fp)==1)
+    {
+        gotoxy(2,row);
+        printf("%s",ur.userid);
+        gotoxy(33,row);
+        printf("%s",ur.name);
+        gotoxy(57,row);
+        printf("%s",ur.pwd);
+        row++;
+     
+    }
+    fclose(fp);
+    getch();
+        
+}
+
+
+
 
