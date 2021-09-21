@@ -85,11 +85,11 @@ int main()
                                 break;
                             case 2:
                                 clrscr();
-                               // addCarDetails();
+                                addCarDetails();
                                 break;
                             case 3:
                                 clrscr();
-                                //viewEmployee();
+                                viewEmployee();
                                 break;
                             case 4:
                                 clrscr();
@@ -101,7 +101,7 @@ int main()
                                 break;
                             case 6:
                                 clrscr();
-                                //deletCarModel();
+                                //deleteCarModel();
                                 break;
                             default:
                                 break;
@@ -147,4 +147,3 @@ int main()
 
     return 0;
 }
-
