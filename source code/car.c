@@ -203,7 +203,7 @@ int adminMenu()
 
 }
 
-void addEmployee()
+/*void addEmployee()
 {
     char empid[10]={"EMP-"};
     char temp[10];
@@ -216,9 +216,7 @@ void addEmployee()
     sprintf(temp,"%d",total_rec);
     strcat(empid,temp);
     strcpy(u.userid,empid);
-    //above 3 steps can be written in onle line like
-    // sprintf(temp,"EMP-%d",total_rec);
-    //strcpy(u.userid,temp);
+
     do
     {
 
@@ -278,6 +276,88 @@ void addEmployee()
 
     }while(1);
     fclose(fp);
+}*/
+
+void addEmployee()
+{
+    char choice;
+    char temp[10];
+    char *pos;
+    User u;
+    FILE *fp=fopen("emp.bin","ab+");
+    fseek(fp,0,SEEK_END);
+    long total_rec=ftell(fp)/sizeof(User);
+    if(total_rec!=0)
+    {
+        fseek(fp,-60,SEEK_END);
+        fread(temp,sizeof(temp),1,fp);
+        printf("temp is %s",temp);
+        getch();
+        pos=strchr(temp,'-');
+        total_rec=atoi(pos+1);
+        printf("\ntotal rec is %d",total_rec);
+        getch();
+
+    }
+    total_rec++;
+    sprintf(u.userid,"Emp-%d",total_rec);
+    fseek(fp,0,SEEK_END);
+    do
+    {
+      clrscr();
+      gotoxy(32,2);
+      textcolor(LIGHTRED);
+      printf("CAR RENTAL APP");
+      textcolor(LIGHTGREEN);
+      int i;
+      gotoxy(1,3);
+      for(i=1;i<=80;i++)
+        printf("~");
+      textcolor(WHITE);
+      gotoxy(25,5);
+      printf("***** ADD EMPLOYEE DETAILS *****");
+      gotoxy(1,8);
+      textcolor(YELLOW);
+      printf("Enter Employee Name:");
+      fflush(stdin);
+      textcolor(WHITE);
+      fgets(u.name,20,stdin);
+      char *pos;
+      pos=strchr(u.name,'\n');
+      if(pos!=NULL)
+      {
+          *pos='\0';
+      }
+      textcolor(YELLOW);
+      printf("Enter Employee pwd:");
+      fflush(stdin);
+      textcolor(WHITE);
+      fgets(u.pwd,20,stdin);
+      pos=strchr(u.pwd,'\n');
+      if(pos!=NULL)
+      {
+          *pos!='\0';
+      }
+      fwrite(&u,sizeof(u),1,fp);
+      gotoxy(30,15);
+      textcolor(LIGHTGREEN);
+      printf("EMPLOYEE ADDED SUCCESSFULLY!");
+      printf("\nEMPLOYEE ID is %s",u.userid);
+      getch();
+      gotoxy(1,20);
+      textcolor(LIGHTRED);
+      printf("Do you want to add more employees (Y/N)?");
+      textcolor(WHITE);
+      fflush(stdin);
+      scanf("%c",&choice);
+      if(choice=='N')
+        break;
+      total_rec++;
+      sprintf(u.userid,"EMP-%d",total_rec);
+
+    }while(1);
+    fclose(fp);
+
 }
 
 void addCarDetails()
@@ -358,6 +438,8 @@ void addCarDetails()
     }while(1);
     fclose(fp);
 }
+
+
 /*
 void viewEmployee()
 {
@@ -429,7 +511,7 @@ void viewEmployee()
     textcolor(LIGHTGREEN);
     for(int i=1;i<=80;i++)
         printf("%c",247);
-    
+
     if(fp==NULL)
     {
         gotoxy(31,9);
@@ -454,13 +536,89 @@ void viewEmployee()
         gotoxy(57,row);
         printf("%s",ur.pwd);
         row++;
-     
+
     }
     fclose(fp);
     getch();
-        
-}
 
+}
+int deleteEmp()
+{
+    FILE *fp1=fopen("emp.bin","rb");
+    char empid[10];
+    int i,result;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(29,5);
+    printf("* DELETE EMPLOYEE RECORD *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(1,12);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    if(fp1==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("No Employees added yet!");
+        return -1;
+    }
+    FILE *fp2=fopen("temp.bin","wb");
+    if(fp2==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("Sorry ! cannot create temp file");
+        return -1;
+    }
+    gotoxy(10,9);
+    textcolor(YELLOW);
+    printf("Enter employee id to delete the record:");
+    textcolor(WHITE);
+    scanf("%s",empid);
+    User u;
+    int found=0;
+    /* 1. Run a loop which reads one record from fp1 at a time
+       2. check whether empid is matching with tempid given by the user
+       3. if it is not matching then write the record in fp2
+       4. otherwise simply set found to 1 */
+
+    while(fread(&u,sizeof(u),1,fp1)==1)
+    {
+        if(strcmp(u.userid,empid)!=0)
+            fwrite(&u,sizeof(u),1,fp2);
+        else
+            found=1;
+    }
+    fclose(fp1);
+    fclose(fp2);
+    if(found==0)
+    {
+        remove("temp.bin");
+    }
+    else
+    {
+        result=remove("emp.bin");
+        if(result!=0)
+            return 2;
+        result=rename("temp.bin","emp.bin");
+        if(result!=0)
+            return 2;
+    }
+    return found;
+
+}
 
 
 
