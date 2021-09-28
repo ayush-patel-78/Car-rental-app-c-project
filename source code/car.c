@@ -620,5 +620,90 @@ int deleteEmp()
 
 }
 
+int empMenu()
+{
+    
+    int choice,i;
+    textcolor(LIGHTRED);
+    gotoxy(32,2);
+    printf("CAR RENTAL SYSTEM");
+    textcolor(LIGHTGREEN);
+    gotoxy(35,6);
+    printf("EMPLOYEE MENU\n");
+    for(i=1;i<=80;i++)
+        printf("*");
+    textcolor(YELLOW);
+    gotoxy(32,8);
+    printf("1. Rent A Car");
+    gotoxy(32,9);
+    printf("2. Booking Details");
+    gotoxy(32,10);
+    printf("3. Available car details");
+    gotoxy(32,11);
+    printf("Show ll car details");
+    gotoxy(32,12);
+    printf("Exit");
+    gotoxy(32,15);
+    printf("Enter choice:");
+    scanf("%d",&choice);
+    return choice;
+}
+
+int selectCarModel()
+{
+    
+    FILE *fp=fopen("car.bin","rb");
+    int flag;
+    int choice,rowno=9;
+    Car C;
+    gotoxy(34,rowno);
+    while(fread(&C,sizeof(C),1,fp)==1)
+    {
+        if(C.car_count>0)
+        {
+            printf("%d . %s",C.car_id,C.car_name);
+            gotoxy(34,++rowno);
+            
+        }
+    }
+    gotoxy(34,rowno+2);
+    printf("Enter your choice:");
+    while(1)
+    {
+        
+        flag=0;
+        scanf("%d",&choice);
+        rewind(fp);
+        while(fread(&C,sizeof(C),1,fp)==1)
+        {
+            if(C.car_id==choice&&C.car_count>0)
+            {
+               flag=1;
+               break;
+            
+            }
+        }
+        if(flag==1)
+        {
+            
+            fclose(fp);
+            return flag;
+        }
+        gotoxy(37,rowno+4);
+        textcolor(LIGHTRED);
+        printf("Wrong input");
+        getch();
+        gotoxy(35,rowno+4);
+        printf("\t\t\t");
+        gotoxy(52,rowno+2);
+        printf("\t\t\t");
+        gototxy(52,rowno+2);
+        textcolor(WHITE);
+        
+    }
+}
+
+
+
 
 
