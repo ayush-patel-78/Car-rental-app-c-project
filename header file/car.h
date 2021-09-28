@@ -42,4 +42,10 @@ void addCarDetails();
 void showCarDetails();
 int deleteEmp();
 int deleteCarModel();
+
+int empMenu();
+int selectCarModel();
+int isValidDate(struct tm);
+void updateCarCount(int);
+void bookedCarDetails();
 #endif // CAR_H_INCLUDED
