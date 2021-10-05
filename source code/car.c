@@ -622,7 +622,7 @@ int deleteEmp()
 
 int empMenu()
 {
-    
+
     int choice,i;
     textcolor(LIGHTRED);
     gotoxy(32,2);
@@ -651,7 +651,7 @@ int empMenu()
 
 int selectCarModel()
 {
-    
+
     FILE *fp=fopen("car.bin","rb");
     int flag;
     int choice,rowno=9;
@@ -663,14 +663,14 @@ int selectCarModel()
         {
             printf("%d . %s",C.car_id,C.car_name);
             gotoxy(34,++rowno);
-            
+
         }
     }
     gotoxy(34,rowno+2);
     printf("Enter your choice:");
     while(1)
     {
-        
+
         flag=0;
         scanf("%d",&choice);
         rewind(fp);
@@ -680,12 +680,12 @@ int selectCarModel()
             {
                flag=1;
                break;
-            
+
             }
         }
         if(flag==1)
         {
-            
+
             fclose(fp);
             return flag;
         }
@@ -697,11 +697,115 @@ int selectCarModel()
         printf("\t\t\t");
         gotoxy(52,rowno+2);
         printf("\t\t\t");
-        gototxy(52,rowno+2);
+        gotoxy(52,rowno+2);
         textcolor(WHITE);
-        
+
     }
 }
+int isValidDate(struct tm dt)
+{
+    
+    if(dt.tm_year>=2021&&dt.tm_year<=2022)
+    {
+        if(dt.tm_mon>=1&&dt.tm_mon<=12)
+        {
+            if((dt.tm_mday>=1&&dt.tm_mday<=31)&&(dt.tm_mon==1||dt.tm_mon==3||dt.tm_mon==5||dt.tm_mon==7||dt.tm_mon==8||dt.tm_mon==10||dt.tm_mon==12))
+            {
+                return 1;
+            }
+            else if((dt.tm_mday>=1&&dt.tm_mday<=30)&&(dt.tm_mon==4||dt.tm_mon==6||dt.tm_mon==9||dt.tm_mon==11))
+            {
+                return 1;
+                
+            }
+            else if((dt.tm_mday>=1&&dt.tm_mday<=28)&&dt.tm_mon==2)
+                return 1;
+            else if((dt.tm_mday>=1&&dt.tm_mday<=29)&&dt.tm_mon==2&&(dt.tm_year%400==0||(dt.tm_year%4==0&&dt.tm_year%100!=0)))
+                return 1;
+            
+        }
+    }
+    return 0;
+}
+
+void updateCarCount(int c_id)
+{
+    FILE* fp=fopen("car.bin","rb+");
+    if(fp==NULL)
+    {
+        printf("Sorry file cannot be open!");
+        getch();
+        return;
+    }
+    Car C;
+    while(fread(&C,sizeof(Car),1,fp)==1)
+    {
+        if(C.car_id==c_id)
+        {
+            int x=C.car_count;
+            x--;
+            fseek(fp,-8,SEEK_CUR);
+            
+            fwrite(&x,sizeof(int),1,fp);
+            break;
+            //fseek(fp,4,SEEK_CUR);
+        }
+    }
+    fclose(fp);
+}
+
+void bookedCarDetails()
+{
+    
+    clrscr();
+    FILE *fp=fopen("customer.bin","rb");
+    Customer_Car_Details CC;
+    int i;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+        
+    }
+    gotoxy(31,5);
+    printf("* BOOKED CAR DETAILS *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    gotoxy(1,8);
+    printf("MODEL\t    CustNAME\t   Pick UP\t    S_Date\t   E_Date");
+    gotoxy(1,9);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    int row=10;
+    textcolor(YELLOW);
+    while(fread(&CC,sizeof(Customer_Car_Details),1,fp)==1)
+    {
+        gotoxy(1,row);
+        printf("%s",getCarName(CC.car_id));
+        gotoxy(13,row);
+        printf("%s",CC.cust_name);
+        gotoxy(27,row);
+        printf("%s",CC.pickup);
+        gotoxy(44,row);
+        printf("%s",CC.drop);
+        gotoxy(58,row);
+        printf("%d-%d-%d",CC.sd.tm_mday,CC.sd.tm_mon,CC.sd.tm_year);
+        gotxy(70,row);
+        printf("%d-%d-%d",CC.ed.tm_mday,CC.ed.tm_mon,CC.ed.tm_year);
+        
+        row++;
+    }
+    
+    
+    fclose(fp);
+    
+}
+
 
 
 
