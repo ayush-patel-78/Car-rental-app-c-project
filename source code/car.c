@@ -704,7 +704,7 @@ int selectCarModel()
 }
 int isValidDate(struct tm dt)
 {
-    
+
     if(dt.tm_year>=2021&&dt.tm_year<=2022)
     {
         if(dt.tm_mon>=1&&dt.tm_mon<=12)
@@ -716,13 +716,13 @@ int isValidDate(struct tm dt)
             else if((dt.tm_mday>=1&&dt.tm_mday<=30)&&(dt.tm_mon==4||dt.tm_mon==6||dt.tm_mon==9||dt.tm_mon==11))
             {
                 return 1;
-                
+
             }
             else if((dt.tm_mday>=1&&dt.tm_mday<=28)&&dt.tm_mon==2)
                 return 1;
             else if((dt.tm_mday>=1&&dt.tm_mday<=29)&&dt.tm_mon==2&&(dt.tm_year%400==0||(dt.tm_year%4==0&&dt.tm_year%100!=0)))
                 return 1;
-            
+
         }
     }
     return 0;
@@ -745,7 +745,7 @@ void updateCarCount(int c_id)
             int x=C.car_count;
             x--;
             fseek(fp,-8,SEEK_CUR);
-            
+
             fwrite(&x,sizeof(int),1,fp);
             break;
             //fseek(fp,4,SEEK_CUR);
@@ -756,7 +756,7 @@ void updateCarCount(int c_id)
 
 void bookedCarDetails()
 {
-    
+
     clrscr();
     FILE *fp=fopen("customer.bin","rb");
     Customer_Car_Details CC;
@@ -767,7 +767,7 @@ void bookedCarDetails()
     for(i=1;i<=80;i++)
     {
         printf("%c",247);
-        
+
     }
     gotoxy(31,5);
     printf("* BOOKED CAR DETAILS *");
@@ -795,15 +795,170 @@ void bookedCarDetails()
         printf("%s",CC.drop);
         gotoxy(58,row);
         printf("%d-%d-%d",CC.sd.tm_mday,CC.sd.tm_mon,CC.sd.tm_year);
-        gotxy(70,row);
+        gotoxy(70,row);
         printf("%d-%d-%d",CC.ed.tm_mday,CC.ed.tm_mon,CC.ed.tm_year);
-        
+
         row++;
     }
-    
-    
+
+
     fclose(fp);
-    
+
+}
+
+char* getCarName(int c_id)
+{
+
+    FILE*fp=fopen("car.bin","rb");
+    if(fp==NULL)
+    {
+        printf("Sorry! file cannot be opened");
+        return NULL;
+    }
+    static Car C;
+    while(fread(&C,sizeof(C),1,fp))
+    {
+        if(C.car_id==c_id)
+        {
+            break;
+        }
+    }
+    fclose(fp);
+    return C.car_name;
+
+}
+
+int rentCar()
+{
+   Customer_Car_Details CC;
+   
+   int c,i;
+   textcolor(LIGHTRED);
+   gotoxy(32,2);
+   printf("CAR RENTAL SYSTEM");
+   textcolor(LIGHTGREEN);
+   gotoxy(35,6); 
+   printf("EMPLOYEE MENU\n");
+   for(i=1;i<=80;i++)
+   {
+       printf("*");
+   }
+   textcolor(YELLOW);
+   gotoxy(32,8);
+   c=selectCarModel();
+   clrscr();
+    textcolor(LIGHTRED);
+   gotoxy(32,2);
+   printf("CAR RENTAL SYSTEM");
+   textcolor(LIGHTGREEN);
+   gotoxy(35,6); 
+   printf("EMPLOYEE MENU\n");
+   for(i=1;i<=80;i++)
+   {
+       printf("*");
+   }
+   gotoxy(1,17);
+   for(i=1;i<=80;i++)
+   {
+       printf("*");
+   }
+   textcolor(YELLOW);
+   gotoxy(27,9);
+   printf("Enter Customer Name:");
+   fflush(stdin);
+   textcolor(WHITE);
+   fgets(CC.cust_name,30,stdin);
+   char *pos;
+   pos=strchr(CC.cust_name,'\n');
+   *pos='\0';
+   gotoxy(27,10);
+   textcolor(YELLOW);
+   printf("Enter pickup point:");
+   textcolor(WHITE);
+   fflush(stdin);
+   fgets(CC.pickup,30,stdin);
+   char *pos;
+   pos=strchr(CC.pickup,'\n');
+   *pos='\0';
+   gotoxy(27,11);
+   textcolor(YELLOW);
+   printf("Enter drop point:");
+   textcolor(WHITE);
+   fflush(stdin);
+   fgets(CC.drop,30,stdin);
+   char *pos;
+   pos=strchr(CC.drop,'\n');
+   *pos='\0';
+   gotoxy(27,12);
+   textcolor(YELLOW);
+   printf("Enter start date(dd/mm/yyyy):");
+   textcolor(WHITE);
+   do
+   {
+       scanf("%d %d %d",&CC.sd.tm_mday,&CC.sd.tm_mon,&CC.sd.tm_year);
+       int datevalid=isvalidDate(CC.sd);
+       if(datevalid==1)
+            break;
+       gotoxy(27,18);
+       textcolor(LIGHTRED);
+       printf("Wrong date");
+       getch();
+       gotoxy(27,18);
+       printf("\t\t\t");
+       gotoxy(56,12);
+       printf("\t\t\t");
+       gotoxy(56,12);
+       textcolor(WHITE);
+   }while(1);
+   
+   gotoxy(27,13);
+   textcolor(YELLOW);
+   printf("Enter end date(dd/mm/yyyy):");
+   textcolor(WHITE);
+   do
+   {
+       scanf("%d %d %d",&CC.ed.tm_mday,&CC.ed.tm_mon,&CC.ed.tm_year);
+       int datevalid=isvalidDate(CC.sd);
+       if(datevalid==1)
+            break;
+       gotoxy(27,18);
+       textcolor(LIGHTRED);
+       printf("Wrong date");
+       getch();
+       gotoxy(27,18);
+       printf("\t\t\t");
+       gotoxy(54,13);
+       printf("\t\t\t");
+       gotoxy(54,13);
+       textcolor(WHITE);
+   }while(1);
+   
+   //Now Validate the dates against current date as well as against each other.
+   
+   FILE*fp;
+   fp=fopen("customer.bin","ab");
+   if(fp==NULL)
+   {
+       gotoxy(27,18);
+       textcolor(LIGHTRED;
+       printf("Sorry! File cannot be opened");
+       return -1;
+   }
+   fwrite(&CC,sizeof(Customer_Car_Details),1,fp);
+   gotoxy(27,18);
+   textcolor(WHITE);
+   
+   printf("Booking done for Car %d",CC.car_id);
+   printf("\nPress any key to continue");
+   getch();
+   fclose(fp);
+   updateCarCount();
+   bookedCarDetails();
+   
+   return 1;
+   
+   getdate();
+   
 }
 
 
