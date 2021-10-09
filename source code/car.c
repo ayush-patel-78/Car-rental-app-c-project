@@ -657,22 +657,35 @@ int selectCarModel()
     int choice,rowno=9;
     Car C;
     gotoxy(34,rowno);
+    int carCount=0;
     while(fread(&C,sizeof(C),1,fp)==1)
     {
         if(C.car_count>0)
         {
             printf("%d . %s",C.car_id,C.car_name);
             gotoxy(34,++rowno);
+            ++carCount;
 
         }
     }
+    if(carCount==0)
+    {
+       fclose(fp);
+        return -2; 
+    }
+       
     gotoxy(34,rowno+2);
-    printf("Enter your choice:");
+    printf("Enter your choice(0 to quit):");
     while(1)
     {
 
         flag=0;
         scanf("%d",&choice);
+        if(choice==0)
+        {
+            fclose(fp);
+            return 0;
+        }
         rewind(fp);
         while(fread(&C,sizeof(C),1,fp)==1)
         {
@@ -831,13 +844,13 @@ char* getCarName(int c_id)
 int rentCar()
 {
    Customer_Car_Details CC;
-   
+
    int c,i;
    textcolor(LIGHTRED);
    gotoxy(32,2);
    printf("CAR RENTAL SYSTEM");
    textcolor(LIGHTGREEN);
-   gotoxy(35,6); 
+   gotoxy(35,6);
    printf("EMPLOYEE MENU\n");
    for(i=1;i<=80;i++)
    {
@@ -846,12 +859,17 @@ int rentCar()
    textcolor(YELLOW);
    gotoxy(32,8);
    c=selectCarModel();
+   if(c==0||c==-2)
+   {
+       return c;
+   }
+   CC.car_id=c;
    clrscr();
     textcolor(LIGHTRED);
    gotoxy(32,2);
    printf("CAR RENTAL SYSTEM");
    textcolor(LIGHTGREEN);
-   gotoxy(35,6); 
+   gotoxy(35,6);
    printf("EMPLOYEE MENU\n");
    for(i=1;i<=80;i++)
    {
@@ -877,7 +895,7 @@ int rentCar()
    textcolor(WHITE);
    fflush(stdin);
    fgets(CC.pickup,30,stdin);
-   char *pos;
+
    pos=strchr(CC.pickup,'\n');
    *pos='\0';
    gotoxy(27,11);
@@ -886,7 +904,7 @@ int rentCar()
    textcolor(WHITE);
    fflush(stdin);
    fgets(CC.drop,30,stdin);
-   char *pos;
+
    pos=strchr(CC.drop,'\n');
    *pos='\0';
    gotoxy(27,12);
@@ -896,7 +914,7 @@ int rentCar()
    do
    {
        scanf("%d %d %d",&CC.sd.tm_mday,&CC.sd.tm_mon,&CC.sd.tm_year);
-       int datevalid=isvalidDate(CC.sd);
+       int datevalid=isValidDate(CC.sd);
        if(datevalid==1)
             break;
        gotoxy(27,18);
@@ -910,7 +928,7 @@ int rentCar()
        gotoxy(56,12);
        textcolor(WHITE);
    }while(1);
-   
+
    gotoxy(27,13);
    textcolor(YELLOW);
    printf("Enter end date(dd/mm/yyyy):");
@@ -918,7 +936,7 @@ int rentCar()
    do
    {
        scanf("%d %d %d",&CC.ed.tm_mday,&CC.ed.tm_mon,&CC.ed.tm_year);
-       int datevalid=isvalidDate(CC.sd);
+       int datevalid=isValidDate(CC.sd);
        if(datevalid==1)
             break;
        gotoxy(27,18);
@@ -932,35 +950,146 @@ int rentCar()
        gotoxy(54,13);
        textcolor(WHITE);
    }while(1);
-   
+
    //Now Validate the dates against current date as well as against each other.
-   
+
    FILE*fp;
    fp=fopen("customer.bin","ab");
    if(fp==NULL)
    {
        gotoxy(27,18);
-       textcolor(LIGHTRED;
+       textcolor(LIGHTRED);
        printf("Sorry! File cannot be opened");
        return -1;
    }
    fwrite(&CC,sizeof(Customer_Car_Details),1,fp);
    gotoxy(27,18);
    textcolor(WHITE);
-   
+
    printf("Booking done for Car %d",CC.car_id);
    printf("\nPress any key to continue");
    getch();
    fclose(fp);
-   updateCarCount();
-   bookedCarDetails();
-   
+//   updateCarCount();
+//   bookedCarDetails();
+
    return 1;
-   
+
    getdate();
-   
+
 }
 
+void availCarDetails()
+{
+    FILE* fp= fopen("car.bin","rb");
+    Car C;
+    int i;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    gotoxy(32,5);
+    tetxcolor(YELLOW);
+    printf("* AVAILABLE CAR DETAILS *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+      
+    if(fp==NULL)
+    {
+          gotoxy(32,8);
+          textcolor(LIGHTRED);
+          printf("Sorry File Cannot be opened!");
+          getch();
+          return;
+    }
+    gotoxy(1,8);
+    printf("Car ID\t   Model\t\t   Capacity\tAvailable\tprice/Day");
+    gotoxy(1,9);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    int row=10;
+    textcolor(YELLOW);
+    
+    while(fread(&C,sizeof(C),1,fp)==1)
+    {
+        if(C.car_count>0)
+        {
+            gotoxy(2,row);
+            printf("%d",C.car_id);
+            gotoxy(13,row);
+            printf("%s",C.car_name);
+            gotoxy(35,row);
+            printf("%d",C.capacity);
+            gotoxy(50,row);
+            printf("%d",C.car_count);
+            gotoxy(68,row);
+            printf("%d",C.price);
+            row++;
+            
+        }
+    }
+    fclose(fp);
+    
+}
+void showCarDetails()
+{
+    FILE* fp= fopen("car.bin","rb");
+    Car C;
+    int i;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    gotoxy(32,5);
+    tetxcolor(YELLOW);
+    printf("* ALL CAR DETAILS *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+      
+    if(fp==NULL)
+    {
+          gotoxy(32,8);
+          textcolor(LIGHTRED);
+          printf("Sorry File Cannot be opened!");
+          getch();
+          return;
+    }
+    gotoxy(1,8);
+    printf("Car ID\t   Model\t\t   Capacity\tAvailable\tprice/Day");
+    gotoxy(1,9);
+    for(i=1;i<=80;i++)
+        printf("%c",247);
+    int row=10;
+    textcolor(YELLOW);
+    
+    while(fread(&C,sizeof(C),1,fp)==1)
+    {
+        
+        
+            gotoxy(2,row);
+            printf("%d",C.car_id);
+            gotoxy(13,row);
+            printf("%s",C.car_name);
+            gotoxy(35,row);
+            printf("%d",C.capacity);
+            gotoxy(50,row);
+            printf("%d",C.car_count);
+            gotoxy(68,row);
+            printf("%d",C.price);
+            row++;
+            
+        
+    }
+    fclose(fp);
+}
 
 
 
