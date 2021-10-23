@@ -640,6 +640,85 @@ int deleteEmp()
 
 }
 
+
+int deleteCarModel()
+{
+    FILE *fp1=fopen("car.bin","rb");
+    int carid;
+    int i,result;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(29,5);
+    printf("* DELETE Car RECORD *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(1,12);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    if(fp1==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("No Car added yet!");
+        return -1;
+    }
+    FILE *fp2=fopen("temp.bin","wb");
+    if(fp2==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("Sorry ! cannot create temp file");
+        return -1;
+    }
+    gotoxy(10,9);
+    textcolor(YELLOW);
+    printf("Enter Car id to delete the record:");
+    textcolor(WHITE);
+    scanf("%d",&carid);
+    Car C;
+    int found=0;
+    /* 1. Run a loop which reads one record from fp1 at a time
+       2. check whether empid is matching with tempid given by the user
+       3. if it is not matching then write the record in fp2
+       4. otherwise simply set found to 1 */
+
+    while(fread(&C,sizeof(C),1,fp1)==1)
+    {
+        if(C.car_id!=carid)
+            fwrite(&C,sizeof(C),1,fp2);
+        else
+            found=1;
+    }
+    fclose(fp1);
+    fclose(fp2);
+    if(found==0)
+    {
+        remove("temp.bin");
+    }
+    else
+    {
+        result=remove("car.bin");
+        if(result!=0)
+            return 2;
+        result=rename("temp.bin","car.bin");
+        if(result!=0)
+            return 2;
+    }
+    return found;
+
+}
+
 int empMenu()
 {
 
@@ -1166,4 +1245,3 @@ void showCarDetails()
     fclose(fp);
     getch();
 }
-
