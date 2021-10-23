@@ -2,7 +2,7 @@
 #include <string.h>
 #include "conio2.h"
 #include "car.h"
-
+#include <time.h>
 void addAdmin()
 {
     FILE *fp=fopen("admin.bin","rb");
@@ -16,6 +16,17 @@ void addAdmin()
     fclose(fp);
 }
 
+/*void permanentemployee()
+{
+    FILE *fp=fopen("emp.bin","rb");
+    if(fp==NULL)
+    {
+        fp=fopen("emp.bin","wb");
+        User u[2]={{"Emp-1","ayush","ayush"},{"Emp-2","test","test"}};
+        fwrite(u,sizeof(u),1,fp);
+    }
+    fclose(fp);
+}*/
 User* getInput()
 {
     int i;
@@ -116,10 +127,12 @@ int checkUserExist(User u,char *usertype)
     if(strcmp(usertype,"admin")==0)
     {
        fp=fopen("admin.bin","rb");
+      // printf("admin.bin open successfully\n");
     }
     else
     {
         fp=fopen("emp.bin","rb");
+      //  printf("emp.bin open successfully\n");
     }
     if(fp==NULL)
     {
@@ -133,13 +146,20 @@ int checkUserExist(User u,char *usertype)
     }
     int found=0;
     User user;
+   // printf("u.userid: %s\n", u.userid);
+    //printf("u.pwd: %s\n", u.pwd);
     while(fread(&user,sizeof(user),1,fp)==1)
     {
-        if(strcmp(u.userid,user.userid)==0&&strcmp(u.pwd,user.pwd)==0)
+       // printf("user.userid: %s\n", user.userid);
+       // printf("user.pwd: %s\n", user.pwd);
+        //getch();
+        if((strcmp(u.userid,user.userid)==0)&&(strcmp(u.pwd,user.pwd)==0))
         {
+           // printf("user found\n");
             found=1;
             break;
         }
+       // printf("found: %d\n", found);
     }
     if(found==0)
     {
@@ -336,7 +356,7 @@ void addEmployee()
       pos=strchr(u.pwd,'\n');
       if(pos!=NULL)
       {
-          *pos!='\0';
+          *pos='\0';
       }
       fwrite(&u,sizeof(u),1,fp);
       gotoxy(30,15);
@@ -350,7 +370,7 @@ void addEmployee()
       textcolor(WHITE);
       fflush(stdin);
       scanf("%c",&choice);
-      if(choice=='N')
+      if(choice=='N'||choice=='n')
         break;
       total_rec++;
       sprintf(u.userid,"EMP-%d",total_rec);
@@ -427,7 +447,7 @@ void addCarDetails()
         textcolor(WHITE);
         fflush(stdin);
         scanf("%c",&choice);
-        if(choice=='N')
+        if(choice=='N'||choice=='n')
            break;
         total_rec++;
         c.car_id=total_rec;
@@ -640,9 +660,9 @@ int empMenu()
     gotoxy(32,10);
     printf("3. Available car details");
     gotoxy(32,11);
-    printf("Show ll car details");
+    printf("4. Show All car details");
     gotoxy(32,12);
-    printf("Exit");
+    printf("5. Exit");
     gotoxy(32,15);
     printf("Enter choice:");
     scanf("%d",&choice);
@@ -671,9 +691,9 @@ int selectCarModel()
     if(carCount==0)
     {
        fclose(fp);
-        return -2; 
+        return -2;
     }
-       
+
     gotoxy(34,rowno+2);
     printf("Enter your choice(0 to quit):");
     while(1)
@@ -739,6 +759,42 @@ int isValidDate(struct tm dt)
         }
     }
     return 0;
+}
+
+int checkDate(struct tm sd,struct tm ed)
+{
+
+
+    time_t obj=time(0);
+    //char *p=ctime(&obj);
+   // printf("%s",p);
+    //Another function
+    struct tm *p=localtime(&obj);
+    //printf("%d",1900+p->tm_year);
+    //printf("\nMonth:%d",1+p->tm_mon);
+    //printf("\nDay:%d",p->tm_mday);
+    //return 0;
+    if(sd.tm_year>=1900+p->tm_year)
+    {
+        if(sd.tm_mon>=1+p->tm_mon)
+        {
+            if(sd.tm_mday>=p->tm_mday)
+            {
+                if(sd.tm_year<=ed.tm_year)
+                {
+                    if(sd.tm_mon<=ed.tm_mon)
+                    {
+                        if(sd.tm_mday<=ed.tm_mday)
+                        {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+
 }
 
 void updateCarCount(int c_id)
@@ -816,6 +872,7 @@ void bookedCarDetails()
 
 
     fclose(fp);
+    getch();
 
 }
 
@@ -913,10 +970,13 @@ int rentCar()
    textcolor(WHITE);
    do
    {
-       scanf("%d %d %d",&CC.sd.tm_mday,&CC.sd.tm_mon,&CC.sd.tm_year);
+       scanf("%d/ %d/ %d",&CC.sd.tm_mday,&CC.sd.tm_mon,&CC.sd.tm_year);
        int datevalid=isValidDate(CC.sd);
        if(datevalid==1)
-            break;
+       {
+               break;
+       }
+
        gotoxy(27,18);
        textcolor(LIGHTRED);
        printf("Wrong date");
@@ -935,8 +995,8 @@ int rentCar()
    textcolor(WHITE);
    do
    {
-       scanf("%d %d %d",&CC.ed.tm_mday,&CC.ed.tm_mon,&CC.ed.tm_year);
-       int datevalid=isValidDate(CC.sd);
+       scanf("%d/ %d/ %d",&CC.ed.tm_mday,&CC.ed.tm_mon,&CC.ed.tm_year);
+       int datevalid=isValidDate(CC.ed);
        if(datevalid==1)
             break;
        gotoxy(27,18);
@@ -952,30 +1012,44 @@ int rentCar()
    }while(1);
 
    //Now Validate the dates against current date as well as against each other.
-
-   FILE*fp;
-   fp=fopen("customer.bin","ab");
-   if(fp==NULL)
+   int correctdate=checkDate(CC.sd,CC.ed);
+   if(correctdate==1)
    {
-       gotoxy(27,18);
-       textcolor(LIGHTRED);
-       printf("Sorry! File cannot be opened");
-       return -1;
+        FILE*fp;
+        fp=fopen("customer.bin","ab");
+        if(fp==NULL)
+        {
+         gotoxy(27,18);
+         textcolor(LIGHTRED);
+         printf("Sorry! File cannot be opened");
+         return -1;
+        }
+         fwrite(&CC,sizeof(Customer_Car_Details),1,fp);
+         gotoxy(27,18);
+         textcolor(WHITE);
+
+         printf("Booking done for Car %d",CC.car_id);
+         printf("\nPress any key to continue");
+         getch();
+         fclose(fp);
+         updateCarCount(CC.car_id);
+         bookedCarDetails();
+
+         return 1;
    }
-   fwrite(&CC,sizeof(Customer_Car_Details),1,fp);
-   gotoxy(27,18);
-   textcolor(WHITE);
+   else
+   {
+      gotoxy(32,18);
+      textcolor(LIGHTRED);
+      printf("Wrong date ");
+      gotoxy(27,19);
+      printf("Booking cannot be done");
+      getch();
+   }
 
-   printf("Booking done for Car %d",CC.car_id);
-   printf("\nPress any key to continue");
-   getch();
-   fclose(fp);
-//   updateCarCount();
-//   bookedCarDetails();
 
-   return 1;
 
-   getdate();
+   //getdate();
 
 }
 
@@ -991,13 +1065,13 @@ void availCarDetails()
     for(i=1;i<=80;i++)
         printf("%c",247);
     gotoxy(32,5);
-    tetxcolor(YELLOW);
+    textcolor(YELLOW);
     printf("* AVAILABLE CAR DETAILS *");
     gotoxy(1,7);
     textcolor(LIGHTGREEN);
     for(i=1;i<=80;i++)
         printf("%c",247);
-      
+
     if(fp==NULL)
     {
           gotoxy(32,8);
@@ -1013,7 +1087,7 @@ void availCarDetails()
         printf("%c",247);
     int row=10;
     textcolor(YELLOW);
-    
+
     while(fread(&C,sizeof(C),1,fp)==1)
     {
         if(C.car_count>0)
@@ -1029,11 +1103,12 @@ void availCarDetails()
             gotoxy(68,row);
             printf("%d",C.price);
             row++;
-            
+
         }
     }
     fclose(fp);
-    
+    getch();
+
 }
 void showCarDetails()
 {
@@ -1047,13 +1122,13 @@ void showCarDetails()
     for(i=1;i<=80;i++)
         printf("%c",247);
     gotoxy(32,5);
-    tetxcolor(YELLOW);
+    textcolor(YELLOW);
     printf("* ALL CAR DETAILS *");
     gotoxy(1,7);
     textcolor(LIGHTGREEN);
     for(i=1;i<=80;i++)
         printf("%c",247);
-      
+
     if(fp==NULL)
     {
           gotoxy(32,8);
@@ -1069,11 +1144,11 @@ void showCarDetails()
         printf("%c",247);
     int row=10;
     textcolor(YELLOW);
-    
+
     while(fread(&C,sizeof(C),1,fp)==1)
     {
-        
-        
+
+
             gotoxy(2,row);
             printf("%d",C.car_id);
             gotoxy(13,row);
@@ -1085,13 +1160,10 @@ void showCarDetails()
             gotoxy(68,row);
             printf("%d",C.price);
             row++;
-            
-        
+
+
     }
     fclose(fp);
+    getch();
 }
-
-
-
-
 
