@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include "conio2.h"
 #include "car.h"
+#include <time.h>
 
 int main()
 {
     int i;
     int type,k;
+    int result;
     User * usr;
     gotoxy(25,10);
     textcolor(YELLOW);
@@ -17,6 +19,7 @@ int main()
     getch();
     textcolor(YELLOW);
     addAdmin();
+    //permanentemployee();
     while(1)
     {
         clrscr();
@@ -45,8 +48,8 @@ int main()
         gotoxy(32,16);
         textcolor(WHITE);
         printf("Select your role:");
-        do
-        {
+
+
             scanf("%d",&type);
             if(type==1)
             {
@@ -55,7 +58,10 @@ int main()
                 {
                    usr=getInput();
                    if(usr==NULL)
-                       break;
+                   {
+                      break;
+                   }
+
                    else
                    {
                     //call for checkUserExist();
@@ -76,7 +82,10 @@ int main()
                             int choice;
                             choice=adminMenu();
                             if(choice==7)
+                            {
                                 break;
+                            }
+
                             switch(choice)
                             {
                             case 1:
@@ -93,15 +102,34 @@ int main()
                                 break;
                             case 4:
                                 clrscr();
-                                //showCarDetails();
+                                showCarDetails();
                                 break;
                             case 5:
                                 clrscr();
-                                //deleteEmp();
+                                result=deleteEmp();
+                                gotoxy(15,14);
+                                if(result==0)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Sorry! No record of the given employee found");
+                                }
+                                else if(result==1)
+                                {
+                                    textcolor(LIGHTGREEN);
+                                    printf("Record deleted successfully!");
+                                }
+                                else if(result==2)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Error in deletion");
+                                }
+                                textcolor(WHITE);
+                                printf("\nPress any key to return back");
+                                getch();
                                 break;
                             case 6:
                                 clrscr();
-                                //deleteCarModel();
+                               // deleteCarModel();
                                 break;
                             default:
                                 break;
@@ -116,6 +144,81 @@ int main()
             else if(type==2)
             {
                 //code for employee login
+                  do
+                  {
+                    usr=getInput();
+                    if(usr==NULL)
+                       break;
+                    else
+                    {
+                    //call for checkUserExist();
+                      k=checkUserExist(*usr,"");
+                    }
+                  }while(k==0);
+                  if(k==-1)
+                     break;
+                     if(k==1)
+                      {
+                        gotoxy(1,20);
+                        textcolor(WHITE);
+                        printf("Press any key to continue");
+                        _getch();
+                        while(1)
+                        {
+                            clrscr();
+                            int choice;
+                            choice=empMenu();
+                            if(choice==5)
+                            {
+                               break;
+                            }
+
+                            switch(choice)
+                            {
+                             case 1:
+                                clrscr();
+                                int rentresp;
+                                rentresp=rentCar();
+                                if(rentresp==-2)
+                                {
+                                    textcolor(LIGHTRED);
+                                    gotoxy(35,9);
+                                    printf("Sorry! All cars booked. Try Later");
+                                    getch();
+                                }
+                                else if(rentresp==0)
+                                {
+                                    gotoxy(27,18);
+                                    textcolor(LIGHTRED);
+                                    printf("You did not choose any car");
+                                    getch();
+                                }
+                                break;
+                             case 2:
+                                clrscr();
+                                bookedCarDetails();
+                                break;
+                             case 3:
+                                clrscr();
+                                availCarDetails();
+                                break;
+                             case 4:
+                                clrscr();
+                                showCarDetails();
+                                break;
+
+                            case 5:
+                                clrscr();
+                                break;
+                            default:
+                                break;
+
+
+                            }
+                        }
+
+                    }
+
             }
             else if(type==3)
             {
@@ -140,8 +243,8 @@ int main()
                 gotoxy(49,16);
             }
 
-        }while(1);
-        getch();
+
+       // getch();
     }
 
 
