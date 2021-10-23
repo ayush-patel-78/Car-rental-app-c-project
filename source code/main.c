@@ -129,7 +129,26 @@ int main()
                                 break;
                             case 6:
                                 clrscr();
-                               // deleteCarModel();
+                                result=deleteCarModel();
+                                gotoxy(15,14);
+                                if(result==0)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Sorry! No record of the given Car found");
+                                }
+                                else if(result==1)
+                                {
+                                    textcolor(LIGHTGREEN);
+                                    printf("Record deleted successfully!");
+                                }
+                                else if(result==2)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Error in deletion");
+                                }
+                                textcolor(WHITE);
+                                printf("\nPress any key to return back");
+                                getch();
                                 break;
                             default:
                                 break;
