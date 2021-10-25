@@ -187,7 +187,7 @@ int main()
                             clrscr();
                             int choice;
                             choice=empMenu();
-                            if(choice==5)
+                            if(choice==6)
                             {
                                break;
                             }
@@ -228,6 +228,26 @@ int main()
 
                             case 5:
                                 clrscr();
+                                result=returnCar();
+                                gotoxy(15,14);
+                                 if(result==0)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Sorry! No record of the given car found");
+                                }
+                                else if(result==1)
+                                {
+                                    textcolor(LIGHTGREEN);
+                                    printf("Car returned successfully!");
+                                }
+                                else if(result==2)
+                                {
+                                    textcolor(LIGHTRED);
+                                    printf("Error in returning a car");
+                                }
+                                textcolor(WHITE);
+                                printf("\nPress any key to return back");
+                                getch();
                                 break;
                             default:
                                 break;
