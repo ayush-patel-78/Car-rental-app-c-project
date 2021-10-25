@@ -741,8 +741,10 @@ int empMenu()
     gotoxy(32,11);
     printf("4. Show All car details");
     gotoxy(32,12);
-    printf("5. Exit");
-    gotoxy(32,15);
+    printf("5. Return Car");
+    gotoxy(32,13);
+    printf("6.Exit");
+    gotoxy(32,16);
     printf("Enter choice:");
     scanf("%d",&choice);
     return choice;
@@ -799,7 +801,7 @@ int selectCarModel()
         {
 
             fclose(fp);
-            return flag;
+            return choice;
         }
         gotoxy(37,rowno+4);
         textcolor(LIGHTRED);
@@ -807,9 +809,9 @@ int selectCarModel()
         getch();
         gotoxy(35,rowno+4);
         printf("\t\t\t");
-        gotoxy(52,rowno+2);
+        gotoxy(63,rowno+2);
         printf("\t\t\t");
-        gotoxy(52,rowno+2);
+        gotoxy(63,rowno+2);
         textcolor(WHITE);
 
     }
@@ -891,10 +893,10 @@ void updateCarCount(int c_id)
         if(C.car_id==c_id)
         {
             int x=C.car_count;
-            x--;
+            x=x-1;
             fseek(fp,-8,SEEK_CUR);
 
-            fwrite(&x,sizeof(int),1,fp);
+            fwrite(&x,sizeof(x),1,fp);
             break;
             //fseek(fp,4,SEEK_CUR);
         }
@@ -1245,3 +1247,122 @@ void showCarDetails()
     fclose(fp);
     getch();
 }
+
+int returnCar()
+{
+    FILE *fp1=fopen("customer.bin","rb");
+    int c_id;
+    int i,result;
+    textcolor(YELLOW);
+    gotoxy(32,1);
+    printf("CAR RENTAL SYSTEM\n");
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(33,5);
+    printf("* Return Car *");
+    gotoxy(1,7);
+    textcolor(LIGHTGREEN);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    gotoxy(1,12);
+    for(i=1;i<=80;i++)
+    {
+        printf("%c",247);
+    }
+    if(fp1==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("No Car booked yet!");
+        return -1;
+    }
+    FILE *fp2=fopen("temp.bin","wb");
+    if(fp2==NULL)
+    {
+        textcolor(LIGHTRED);
+        gotoxy(32,10);
+        printf("Sorry ! cannot create temp file");
+        return -1;
+    }
+    gotoxy(10,9);
+    textcolor(YELLOW);
+    printf("Enter Car id to return a car:");
+    textcolor(WHITE);
+    scanf("%d",&c_id);
+    Customer_Car_Details CC;
+    int found=0;
+    /* 1. Run a loop which reads one record from fp1 at a time
+       2. check whether empid is matching with tempid given by the user
+       3. if it is not matching then write the record in fp2
+       4. otherwise simply set found to 1 */
+
+    while(fread(&CC,sizeof(CC),1,fp1)==1)
+    {
+        if(found==0||found==1)
+        {
+            if(found==1)
+            {
+                 fwrite(&CC,sizeof(CC),1,fp2);
+            }
+            else
+            {
+                if(CC.car_id!=c_id)
+                  fwrite(&CC,sizeof(CC),1,fp2);
+                else
+                  found=1;
+            }
+
+        }
+
+    }
+    fclose(fp1);
+    fclose(fp2);
+    if(found==0)
+    {
+        remove("temp.bin");
+    }
+    else
+    {
+        result=remove("customer.bin");
+        if(result!=0)
+            return 2;
+        result=rename("temp.bin","customer.bin");
+        if(result!=0)
+            return 2;
+    }
+    update_car_count(c_id);
+
+    return found;
+
+}
+void update_car_count(int c_id)
+{
+    FILE* fp=fopen("car.bin","rb+");
+    if(fp==NULL)
+    {
+        printf("Sorry file cannot be open!");
+        getch();
+        return;
+    }
+    Car C;
+    while(fread(&C,sizeof(Car),1,fp)==1)
+    {
+        if(C.car_id==c_id)
+        {
+            int x=C.car_count;
+            x=x+1;
+            fseek(fp,-8,SEEK_CUR);
+
+            fwrite(&x,sizeof(x),1,fp);
+            break;
+            //fseek(fp,4,SEEK_CUR);
+        }
+    }
+    fclose(fp);
+}
+
+
